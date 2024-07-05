@@ -1,0 +1,15 @@
+#!/bin/sh
+set -e
+# Hash the password
+HASH=$(mkpasswd --method=sha-512 "changeit")
+
+# Retrieve user's hashed password from /etc/shadow
+USER_HASH=$(grep "^sftpuser:" /etc/shadow | cut -d: -f2)
+
+if [ "$HASH" == "$USER_HASH" ]; then
+  echo "Password is correct."
+  echo "sftpuser:$1" | chpasswd
+else
+  echo "Password is incorrect."
+  exit 1
+fi
